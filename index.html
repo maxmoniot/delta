@@ -1,5 +1,90 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Delta</title><meta http-equiv="refresh" content="0; url=confidentialite.html">
-<style>body{margin:0;background:#151515;color:#f0f0f0;font:16px/1.5 system-ui,sans-serif;padding:40px 16px}a{color:inherit}</style>
-</head><body><p><a href="confidentialite.html">Delta — règles de confidentialité</a></p></body></html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delta — jeu de précision</title>
+<meta name="description" content="Couleur, son, tracé, forme, mélodie : cinq défis où le but est un écart nul. Jeu Android gratuit, sans publicité.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://maxmoniot.github.io/delta/">
+<meta property="og:title" content="Delta — jeu de précision">
+<meta property="og:description" content="Couleur, son, tracé, forme, mélodie : cinq défis où le but est un écart nul. Qui fait mieux ?">
+<meta property="og:image" content="https://maxmoniot.github.io/delta/apercu.png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="500">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#151515">
+<link rel="icon" href="icone.png">
+<!-- Page d'accueil de Delta (29/10/2026). L'identifiant Play « fr.max.nuancier » ne peut plus changer : le lien que le
+     jeu partage est celui-ci, qui finit par « delta ». Sur un téléphone Android, on file tout de suite au Play Store ;
+     ailleurs, la page présente le jeu. Elle sert aussi d'accueil à l'écran de consentement Google (lien de
+     confidentialité obligatoire). Source : android/play/site/ du projet ; publiée dans le dépôt maxmoniot/delta. -->
+<script>
+  var PLAY = 'https://play.google.com/store/apps/details?id=fr.max.nuancier';
+  if (/Android/i.test(navigator.userAgent) && !/[?&]reste\b/.test(location.search)) location.replace(PLAY);
+</script>
+<style>
+  @font-face { font-family: 'Archivo'; src: url('fonts/archivo-latin.woff2') format('woff2'); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+  :root { --bg: #151515; --raise: #1f1f1f; --line: #333333; --ink: #f0f0f0; --ink-2: #9b9b9b; --ink-3: #6a6a6a; --paper: #e8e8e8; --paper-ink: #111111; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font: 16px/1.5 'Archivo', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  main { max-width: 960px; margin: 0 auto; padding: 40px 16px 56px; display: grid; grid-template-columns: 1fr 300px; gap: 56px; align-items: start; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand svg { width: 52px; height: 46px; }
+  .brand b { font-stretch: 125%; font-weight: 820; font-size: 58px; letter-spacing: -.035em; line-height: 1; }
+  .lede { margin: 28px 0 8px; font-size: 26px; font-weight: 640; line-height: 1.2; letter-spacing: -.015em; max-width: 30ch; }
+  .sub { color: var(--ink-2); max-width: 46ch; }
+  .worlds { margin: 32px 0; display: flex; flex-direction: column; gap: 8px; list-style: none; }
+  .worlds li { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 14px; padding: 12px 14px; border: 1.5px solid var(--line); }
+  .worlds li:first-child { background: var(--paper); color: var(--paper-ink); border-color: var(--paper); }
+  .glyph { display: flex; align-items: flex-end; font-stretch: 125%; font-weight: 820; font-size: 32px; line-height: .74; letter-spacing: -.05em; }
+  .glyph svg { width: 27px; height: 23px; fill: currentColor; margin-right: 1px; }
+  .worlds li:not(:first-child) .glyph svg { fill: none; stroke: currentColor; stroke-width: 2.2; }
+  .worlds em { display: block; font-style: normal; font-size: 9.5px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; opacity: .55; }
+  .worlds strong { font-size: 19px; font-weight: 740; letter-spacing: -.015em; }
+  .worlds span.t { display: block; font-size: 13.5px; opacity: .72; }
+  .get { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; padding: 0 20px; background: var(--paper); color: var(--paper-ink);
+    text-decoration: none; font-weight: 700; font-size: 19px; letter-spacing: -.01em; }
+  .get small { font-weight: 500; font-size: 12px; letter-spacing: .04em; opacity: .65; }
+  .get:active { transform: scale(.985); }
+  .facts { margin-top: 12px; font-size: 13px; color: var(--ink-3); }
+  .phone { position: sticky; top: 40px; }
+  .phone img { display: block; width: 100%; height: auto; border: 1.5px solid var(--line); }
+  footer { max-width: 960px; margin: 0 auto; padding: 0 16px 40px; font-size: 13px; color: var(--ink-3); }
+  footer a { color: var(--ink-2); }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; gap: 32px; padding-top: 28px; }
+    .brand b { font-size: 46px; }
+    .lede { font-size: 22px; }
+    .phone { position: static; max-width: 280px; }
+    .get { font-size: 18px; white-space: nowrap; }
+    .get small { display: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <div class="brand">
+      <svg viewBox="0 0 30 26" aria-hidden="true"><path d="M15 1 29 25H1z" fill="none" stroke="#f0f0f0" stroke-width="1.6"/><path d="M15 8 24.5 24H5.5z" fill="#6a6a6a"/></svg>
+      <b>Delta</b>
+    </div>
+    <p class="lede">Tu crois avoir l’œil&nbsp;? L’oreille&nbsp;? La main sûre&nbsp;? Delta mesure l’écart.</p>
+    <p class="sub">Cinq défis de précision, un seul but&nbsp;: un écart nul. Des parties de cinq manches, un défi du jour, des modes survie et des classements pour comparer tes scores.</p>
+
+    <ul class="worlds">
+      <li><span class="glyph" aria-hidden="true"><svg viewBox="0 0 30 26"><path d="M15 1 29 25H1z"/></svg>E</span><span><em>Couleur</em><strong>L’œil</strong><span class="t">Trois secondes pour voir. Le reste, c’est ta mémoire.</span></span></li>
+      <li><span class="glyph" aria-hidden="true"><svg viewBox="0 0 30 26"><path d="M15 1 29 25H1z"/></svg>f</span><span><em>Fréquence</em><strong>L’oreille</strong><span class="t">Une seule écoute. Retrouve-la au hertz près.</span></span></li>
+      <li><span class="glyph" aria-hidden="true"><svg viewBox="0 0 30 26"><path d="M15 1 29 25H1z"/></svg>x</span><span><em>Mouvement</em><strong>Le tracé</strong><span class="t">Un rond passe une fois. Refais son trajet, au plus près.</span></span></li>
+      <li><span class="glyph" aria-hidden="true"><svg viewBox="0 0 30 26"><path d="M15 1 29 25H1z"/></svg>°</span><span><em>Placement</em><strong>La forme</strong><span class="t">Une forme posée. Replace-la à l’identique, à deux doigts.</span></span></li>
+      <li><span class="glyph" aria-hidden="true"><svg viewBox="0 0 30 26"><path d="M15 1 29 25H1z"/></svg>♪</span><span><em>Mélodie</em><strong>La mélodie</strong><span class="t">Quelques notes, une écoute. Rejoue-les sur le clavier.</span></span></li>
+    </ul>
+
+    <a class="get" href="https://play.google.com/store/apps/details?id=fr.max.nuancier">Télécharger sur Google Play <small>ANDROID</small></a>
+    <p class="facts">Gratuit · sans publicité · sans compte à créer · fonctionne sans connexion</p>
+  </div>
+  <div class="phone"><img src="capture.png" width="1080" height="1920" alt="L’accueil de Delta : le monde de l’œil ouvert, un éventail de nuancier, et l’étiquette du jeu suivant en bas"></div>
+</main>
+<footer>Delta — jeu de précision pour Android · <a href="confidentialite.html">Règles de confidentialité</a></footer>
+</body>
+</html>

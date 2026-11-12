@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Delta — jeu de précision</title>
-<meta name="description" content="Couleur, son, tracé, forme, mélodie : cinq défis où le but est un écart nul. Jeu Android gratuit, sans publicité.">
+<meta name="description" content="Couleur, son, tracé, forme, mélodie : cinq défis où le but est un écart nul. Jeu gratuit pour Android, iPhone et iPad, sans publicité.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://maxmoniot.github.io/delta/">
 <meta property="og:title" content="Delta — jeu de précision">
@@ -18,10 +18,19 @@
 <!-- Page d'accueil de Delta (29/10/2026). L'identifiant Play « fr.max.nuancier » ne peut plus changer : le lien que le
      jeu partage est celui-ci, qui finit par « delta ». Sur un téléphone Android, on file tout de suite au Play Store ;
      ailleurs, la page présente le jeu. Elle sert aussi d'accueil à l'écran de consentement Google (lien de
-     confidentialité obligatoire). Source : android/play/site/ du projet ; publiée dans le dépôt maxmoniot/delta. -->
+     confidentialité obligatoire). Source : android/play/site/ du projet ; publiée dans le dépôt maxmoniot/delta.
+     Depuis le 12/11/2026, un iPhone ou un iPad va droit à la version iPhone (jouer/), qui propose d'ajouter son icône
+     sur l'écran d'accueil (skill web-vers-appli-iphone, iphone/ du projet). « ?reste » garde cette page partout. -->
 <script>
-  var PLAY = 'https://play.google.com/store/apps/details?id=fr.max.nuancier';
-  if (/Android/i.test(navigator.userAgent) && !/[?&]reste\b/.test(location.search)) location.replace(PLAY);
+  (function () {
+    var PLAY = 'https://play.google.com/store/apps/details?id=fr.max.nuancier';
+    var ua = navigator.userAgent || '', reste = /[?&]reste\b/.test(location.search);
+    // l'iPad se présente comme un Mac depuis iPadOS 13 : un « Mac » tactile est un iPad
+    var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    if (reste) return;
+    if (/Android/i.test(ua)) location.replace(PLAY);
+    else if (ios) location.replace('jouer/');
+  })();
 </script>
 <style>
   @font-face { font-family: 'Archivo'; src: url('fonts/archivo-latin.woff2') format('woff2'); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
@@ -47,6 +56,7 @@
     text-decoration: none; font-weight: 700; font-size: 19px; letter-spacing: -.01em; }
   .get small { font-weight: 500; font-size: 12px; letter-spacing: .04em; opacity: .65; }
   .get:active { transform: scale(.985); }
+  .get.ios { margin-top: 8px; background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
   .facts { margin-top: 12px; font-size: 13px; color: var(--ink-3); }
   .phone { position: sticky; top: 40px; }
   .phone img { display: block; width: 100%; height: auto; border: 1.5px solid var(--line); }
@@ -81,10 +91,11 @@
     </ul>
 
     <a class="get" href="https://play.google.com/store/apps/details?id=fr.max.nuancier">Télécharger sur Google Play <small>ANDROID</small></a>
+    <a class="get ios" href="jouer/">Jouer sur iPhone et iPad <small>SAFARI</small></a>
     <p class="facts">Gratuit · sans publicité · sans compte à créer · fonctionne sans connexion</p>
   </div>
   <div class="phone"><img src="capture.png" width="1080" height="1920" alt="L’accueil de Delta : le monde de l’œil ouvert, un éventail de nuancier, et l’étiquette du jeu suivant en bas"></div>
 </main>
-<footer>Delta — jeu de précision pour Android · <a href="confidentialite.html">Règles de confidentialité</a></footer>
+<footer>Delta — jeu de précision pour Android, iPhone et iPad · <a href="confidentialite.html">Règles de confidentialité</a></footer>
 </body>
 </html>

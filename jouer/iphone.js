@@ -6,9 +6,11 @@
       contexte audio créé par le jeu est noté et repris au geste suivant.
    3. Les gestes de Safari : pas de zoom à deux doigts ni au double appui, pas de loupe ni de menu à l'appui long, pas de défilement.
    4. L'écran reste allumé (verrou d'écran, repris au retour dans l'appli).
-   5. Hors ligne : sw.js garde tout le jeu sur l'appareil (l'essentiel à l'installation, le reste 4 s après le lancement).
-   6. Dans Safari (pas encore sur l'écran d'accueil) : la fenêtre #installer montre les trois gestes pour l'installer, ou
-      « Jouer ici ». Tout appui posé sur elle est arrêté avant le jeu : un jeu qui écoute les appuis sur toute la page et les annule
+   5. Hors ligne : sw.js garde tout le jeu sur l'appareil (l'essentiel à l'installation, le reste 4 s après le lancement, en paquets
+      pour un jeu à beaucoup de fichiers) ; IPHONE.demarrer fait attendre le démarrage du jeu au service, à la première visite.
+   6. Sur un appareil Apple, dans Safari (pas encore installé) : la fenêtre #installer montre les trois gestes pour l'installer, ou
+      « Jouer ici » : iPhone et iPad (Sur l'écran d'accueil), Mac avec Safari 17 et plus (Fichier › Ajouter au Dock) ; ailleurs
+      (ordinateur, Android, Chrome sur Mac), le jeu tout de suite. Tout appui posé sur elle est arrêté avant le jeu : un jeu qui écoute les appuis sur toute la page et les annule
       (preventDefault) empêche sinon Safari de faire le clic, et « Jouer ici » ne répond pas au doigt. */
 (function () {
   'use strict';
@@ -16,6 +18,9 @@
   const ua = navigator.userAgent || '';
   // l'iPad se présente comme un Mac depuis iPadOS 13 : un « Mac » tactile est un iPad
   I.ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  // un Mac avec Safari 17 ou plus (macOS Sonoma) : « Ajouter au Dock » en fait une appli, comme l'écran d'accueil d'un iPhone
+  const vSafari = /Version\/(\d+)[\d.]* (Mobile\/\S+ )?Safari/.exec(ua);
+  I.mac = /Macintosh/.test(ua) && !I.ios && !!vSafari && +vSafari[1] >= 17 && !/Chrome|Chromium|CriOS|FxiOS|Firefox|Edg|OPR/.test(ua);
   // le navigateur d'une appli (Instagram, Facebook, TikTok, Snapchat, Google…) n'a pas « Sur l'écran d'accueil » : d'abord Safari
   I.dansAppli = /FBAN|FBAV|FB_IAB|Instagram|Snapchat|musical_ly|Bytedance|TikTok|Line\/|LinkedInApp|Pinterest|GSA\//.test(ua);
   I.installe = navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches);
@@ -84,20 +89,35 @@
   }
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { garderEcran(); majMarges(); } });
 
-  /* 5. Hors ligne */
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.addEventListener('message', e => {
-        const m = e.data || {};
-        if (m.type === 'avance') { I.hors.fait = m.fait; I.hors.total = m.total; I.hors.fini = m.fait >= m.total; }
-      });
-      navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).then(r => {
-        // le reste des fichiers, en arrière-plan, sans gêner le chargement du jeu
-        setTimeout(() => { if (r.active) r.active.postMessage({ type: 'tout' }); }, 4000);
-      }).catch(() => { });
+  /* 5. Hors ligne, et peu de demandes au serveur (en classe, tout le collège sort par la même adresse : GitHub Pages refuse (429)
+     une adresse qui demande trop). IPHONE.demarrer(f) : à la première visite, f attend que le service soit aux commandes (au plus
+     6 s), pour que chaque fichier passe par lui et voyage dans son paquet ; sinon tout de suite. Un jeu qui a un appel de démarrage
+     dans index.html (ex. <script>G.UI.init();</script>) le fait passer par là grâce à un correctif :
+     <script>IPHONE.demarrer(function () { G.UI.init(); });</script>. */
+  const sw = 'serviceWorker' in navigator && location.protocol !== 'file:';
+  let attendreService = sw && !navigator.serviceWorker.controller;
+  const enAttente = [];
+  const lancer = () => { attendreService = false; while (enAttente.length) { try { enAttente.shift()(); } catch (e) { setTimeout(() => { throw e; }); } } };
+  I.demarrer = f => { if (attendreService) enAttente.push(f); else f(); };
+  if (attendreService) setTimeout(lancer, 6000);
+  if (sw) {
+    navigator.serviceWorker.addEventListener('controllerchange', lancer);
+    let relance = null;
+    const toutDemander = () => navigator.serviceWorker.ready.then(r => { if (r.active) r.active.postMessage({ type: 'tout' }); }).catch(() => { });
+    navigator.serviceWorker.addEventListener('message', e => {
+      const m = e.data || {};
+      if (m.type !== 'avance') return;
+      I.hors.fait = m.fait; I.hors.total = m.total; I.hors.fini = m.fait >= m.total;
+      // le serveur a refusé (trop de demandes) : on redemande plus tard, sans insister
+      if (m.fin && !I.hors.fini && !relance) relance = setTimeout(() => { relance = null; toutDemander(); }, 90000);
+    });
+    const inscrire = () => {
+      // le reste des fichiers, en arrière-plan, sans gêner le chargement du jeu
+      navigator.serviceWorker.register('sw.js').then(() => setTimeout(toutDemander, 4000)).catch(lancer);
       // demande à Safari de ne pas effacer la réserve ni la sauvegarde quand la place manque
       if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => { });
-    });
+    };
+    if (document.readyState === 'complete') inscrire(); else window.addEventListener('load', inscrire);
   }
 
   /* 6. La fenêtre d'installation, dans Safari seulement, pas deux fois dans la même visite */
@@ -106,7 +126,8 @@
     if (!f) return;
     let vu = false;
     try { vu = sessionStorage.getItem('iphone.jouerIci') === '1'; } catch (e) { /* navigation privée */ }
-    if (I.ios && !I.installe && !vu) f.classList.add('ouvert');
+    if ((I.ios || I.mac) && !I.installe && !vu) f.classList.add('ouvert');
+    if (I.mac) f.classList.add('mac');
     if (I.dansAppli) f.classList.add('dans-appli');
     document.getElementById('jouer-ici').addEventListener('click', () => {
       f.classList.remove('ouvert');
